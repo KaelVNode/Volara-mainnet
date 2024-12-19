@@ -115,27 +115,15 @@ download_and_run_script() {
 }
 
 run_additional_script() {
-    read -p "Apakah Anda ingin menjalankan script tambahan volara.sh? (y/n): " CONFIRM
-    while true; do
-        if [[ "$CONFIRM" == "y" || "$CONFIRM" == "Y" ]]; then
-            show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
-            [ -f "volara.sh" ] && rm volara.sh
-            if curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh; then
-                chmod +x volara.sh
-                ./volara.sh
-                show_message "✅ Script volara.sh telah dijalankan."
-            else
-                show_message "❌ Gagal mengunduh script volara.sh."
-            fi
-            break
-        elif [[ "$CONFIRM" == "n" || "$CONFIRM" == "N" ]]; then
-            show_message "❌ Menjalankan script tambahan dibatalkan."
-            break
-        else
-            show_message "❌ Input tidak valid, silakan ketik 'y' atau 'n'."
-            read -p "Apakah Anda ingin menjalankan script tambahan volara.sh? (y/n): " CONFIRM
-        fi
-    done
+    show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
+    [ -f "volara.sh" ] && rm volara.sh
+    if curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh; then
+        chmod +x volara.sh
+        ./volara.sh
+        show_message "✅ Script volara.sh telah dijalankan."
+    else
+        show_message "❌ Gagal mengunduh script volara.sh."
+    fi
 }
 
 stop_containers_by_keyword
