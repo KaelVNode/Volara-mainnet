@@ -85,16 +85,14 @@ download_and_run_script() {
 }
 
 run_additional_script() {
-    read -p "Apakah Anda ingin menjalankan script tambahan volara.sh? (y/n): " CONFIRM
-    if [[ "$CONFIRM" == "y" || "$CONFIRM" == "Y" ]]; then
-        show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
-        [ -f "volara.sh" ] && rm volara.sh
-        curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh
+    show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
+    [ -f "volara.sh" ] && rm volara.sh
+    if curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh; then
         chmod +x volara.sh
         ./volara.sh
         show_message "✅ Script volara.sh telah dijalankan."
     else
-        show_message "❌ Menjalankan script tambahan dibatalkan."
+        show_message "❌ Gagal mengunduh script volara.sh."
     fi
 }
 
