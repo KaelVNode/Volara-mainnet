@@ -26,11 +26,7 @@ stop_containers_by_keyword() {
     if [[ -n "$containers" ]]; then
         for container in $containers; do
             show_message "🛑 Menghentikan container $container..."
-            if sudo docker stop $container; then
-                show_message "✅ Container $container berhasil dihentikan."
-            else
-                show_message "❌ Gagal menghentikan container $container."
-            fi
+            sudo docker stop $container
         done
     else
         show_message "✅ Tidak ada container dengan keyword '$KEYWORD' yang berjalan."
@@ -42,11 +38,7 @@ remove_containers_by_keyword() {
     if [[ -n "$containers" ]]; then
         for container in $containers; do
             show_message "🗑️ Menghapus container $container..."
-            if sudo docker rm $container; then
-                show_message "✅ Container $container berhasil dihapus."
-            else
-                show_message "❌ Gagal menghapus container $container."
-            fi
+            sudo docker rm $container
         done
     else
         show_message "✅ Tidak ada container dengan keyword '$KEYWORD' yang ditemukan."
@@ -58,11 +50,7 @@ remove_images_by_keyword() {
     if [[ -n "$images" ]]; then
         for image in $images; do
             show_message "🗑️ Menghapus image $image..."
-            if sudo docker rmi -f $image; then
-                show_message "✅ Image $image berhasil dihapus."
-            else
-                show_message "❌ Gagal menghapus image $image."
-            fi
+            sudo docker rmi -f $image
         done
     else
         show_message "✅ Tidak ada image dengan keyword '$KEYWORD' yang ditemukan."
@@ -72,11 +60,7 @@ remove_images_by_keyword() {
     if [[ -n "$specific_images" ]]; then
         for image in $specific_images; do
             show_message "🗑️ Menghapus image spesifik $image..."
-            if sudo docker rmi -f $image; then
-                show_message "✅ Image spesifik $image berhasil dihapus."
-            else
-                show_message "❌ Gagal menghapus image spesifik $image."
-            fi
+            sudo docker rmi -f $image
         done
     else
         show_message "✅ Image spesifik $SPECIFIC_IMAGE tidak ditemukan."
@@ -85,46 +69,35 @@ remove_images_by_keyword() {
 
 cleanup_docker() {
     read -p "Apakah Anda ingin membersihkan semua data Docker yang tidak digunakan? (y/n): " CONFIRM
-    while true; do
-        if [[ "$CONFIRM" == "y" || "$CONFIRM" == "Y" ]]; then
-            show_message "🧹 Membersihkan data Docker yang tidak digunakan..."
-            if sudo docker system prune -a -f; then
-                show_message "✅ Data Docker yang tidak digunakan berhasil dibersihkan."
-            else
-                show_message "❌ Gagal membersihkan data Docker."
-            fi
-            break
-        elif [[ "$CONFIRM" == "n" || "$CONFIRM" == "N" ]]; then
-            show_message "❌ Membersihkan data Docker dibatalkan."
-            break
-        else
-            show_message "❌ Input tidak valid, silakan ketik 'y' atau 'n'."
-            read -p "Apakah Anda ingin membersihkan semua data Docker yang tidak digunakan? (y/n): " CONFIRM
-        fi
-    done
+    if [[ "$CONFIRM" == "y" || "$CONFIRM" == "Y" ]]; then
+        show_message "🧹 Membersihkan data Docker yang tidak digunakan..."
+        sudo docker system prune -a -f
+    else
+        show_message "❌ Membersihkan data Docker dibatalkan."
+    fi
 }
 
 download_and_run_script() {
     local url="https://raw.githubusercontent.com/shareithub/volara-new/refs/heads/main/del-volara.sh"
     show_message "📥 Mendownload dan menjalankan script dari $url..."
-    if curl -sSL "$url" | sudo bash; then
-        show_message "✅ Script dari URL telah dijalankan."
-    else
-        show_message "❌ Gagal menjalankan script dari URL."
-    fi
+    curl -sSL $url | sudo bash
+    show_message "✅ Script dari URL telah dijalankan."
 }
 
 run_additional_script() {
-    show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
-    [ -f "volara.sh" ] && rm volara.sh
-    if curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh; then
+    read -p "Apakah Anda ingin menjalankan script tambahan volara.sh? (y/n): " CONFIRM
+    if [[ "$CONFIRM" == "y" || "$CONFIRM" == "Y" ]]; then
+        show_message "🚀 Menjalankan script tambahan untuk volara.sh..."
+        [ -f "volara.sh" ] && rm volara.sh
+        curl -s -o volara.sh https://raw.githubusercontent.com/volaradlp/minercli/refs/heads/main/run_docker.sh
         chmod +x volara.sh
         ./volara.sh
         show_message "✅ Script volara.sh telah dijalankan."
     else
-        show_message "❌ Gagal mengunduh script volara.sh."
+        show_message "❌ Menjalankan script tambahan dibatalkan."
     fi
 }
+
 
 stop_containers_by_keyword
 remove_containers_by_keyword
